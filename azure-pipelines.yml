@@ -18,14 +18,7 @@ jobs:
   - bash: 'make -j8 VERBOSE=1'
     workingDirectory:  'cmake_build'
     failOnStderr: true
-
-- job: job_install_gtest
-  dependsOn: 'job_build_gtest'
-
-  pool:
-    vmImage: 'ubuntu-latest'
-
-  steps:
+    
   - bash: 'make install'
     workingDirectory:  'cmake_build'
     failOnStderr: true

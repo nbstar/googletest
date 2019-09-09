@@ -5,17 +5,27 @@
 
 trigger:
 - master
+jobs:
+- job: job_build_gtest
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - task: CMake@1
+    inputs:
+      workingDirectory: 'cmake_build'
+      cmakeArgs: '-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=release ..'
 
-pool:
-  vmImage: 'ubuntu-latest'
+  - bash: 'make -j8 VERBOSE=1'
+    workingDirectory:  'cmake_build'
+    failOnStderr: true
 
-steps:
-- task: CMake@1
-  inputs:
-    workingDirectory: 'cmake_build'
-    cmakeArgs: '-DCMAKE_BUILD_TYPE=Release -DBUILD_GMOCK=OFF ..'
-- task: CmdLine@2
-  inputs:
-    script: 'make -j8 VERBOSE=1'
-    workingDirectory: 'cmake_build'
+- job: job_install_gtest
+  dependsOn: 'job_build_gtest'
+
+  pool:
+    vmImage: 'ubuntu-latest'
+
+  steps:
+  - bash: 'make install'
+    workingDirectory:  'cmake_build'
     failOnStderr: true

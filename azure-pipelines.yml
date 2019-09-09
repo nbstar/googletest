@@ -10,6 +10,12 @@ pool:
   vmImage: 'ubuntu-latest'
 
 steps:
-- script: |
-    make
-  displayName: 'make'
+- task: CMake@1
+  inputs:
+    workingDirectory: 'cmake_build'
+    cmakeArgs: '-DCMAKE_BUILD_TYPE=Release -DBUILD_GMOCK=OFF''
+- task: CmdLine@2
+  inputs:
+    script: 'make VERBOSE=1'
+    workingDirectory: 'cmake_build'
+    failOnStderr: true

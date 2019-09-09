@@ -13,7 +13,7 @@ jobs:
   - task: CMake@1
     inputs:
       workingDirectory: 'cmake_build'
-      cmakeArgs: '-DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=release ..'
+      cmakeArgs: '-DCMAKE_BUILD_TYPE=Release -DBUILD_GMOCK=OFF -DCMAKE_INSTALL_PREFIX=release ..'
 
   - bash: 'make -j8 VERBOSE=1'
     workingDirectory:  'cmake_build'
@@ -22,3 +22,20 @@ jobs:
   - bash: 'make install'
     workingDirectory:  'cmake_build'
     failOnStderr: true
+  - task: PublishPipelineArtifact@1
+    inputs:
+      targetPath: '$(Pipeline.Workspace)/cmake_build/release'
+      artifact: 'google_test'
+
+- job: job_download_artifact
+  pool:
+    vmImage: 'ubuntu-latest'
+  dependsOn: 'job_build_gtest'
+
+  steps:
+  - task: DownloadPipelineArtifact@2
+    inputs:
+      buildType: 'current'
+      targetPath: '$(Pipeline.Workspace)'
+      artifactName: 'google_test'
+      

@@ -22,20 +22,17 @@ jobs:
   - bash: 'make install'
     workingDirectory:  'cmake_build'
     failOnStderr: true
-  - task: PublishPipelineArtifact@1
-    inputs:
-      targetPath: '$(Pipeline.Workspace)/cmake_build/release'
-      artifact: 'google_test'
+
+  - publish: $(System.DefaultWorkingDirectory)/cmake_build/release
+    artifact: google_test
 
 - job: job_download_artifact
-  pool:
-    vmImage: 'ubuntu-latest'
   dependsOn: 'job_build_gtest'
 
+  pool:
+    vmImage: 'ubuntu-latest'
+
   steps:
-  - task: DownloadPipelineArtifact@2
-    inputs:
-      buildType: 'current'
-      targetPath: '$(Pipeline.Workspace)'
-      artifactName: 'google_test'
-      
+  - bash: 'mkdir -p $(System.DefaultWorkingDirectory)/artifact'
+  - download: $(System.DefaultWorkingDirectory)/artifact
+    artifact: google_test

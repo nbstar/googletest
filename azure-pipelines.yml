@@ -3,36 +3,45 @@
 # Add steps that publish test results, save build artifacts, deploy, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/apps/c-cpp/gcc
 
+name: demo_pipeline
+
+variables:
+  var1: value1
+
 trigger:
 - master
-jobs:
-- job: job_build_gtest
-  pool:
-    vmImage: 'ubuntu-latest'
-  steps:
-  - task: CMake@1
-    inputs:
-      workingDirectory: 'cmake_build'
-      cmakeArgs: '-DCMAKE_BUILD_TYPE=Release -DBUILD_GMOCK=OFF -DCMAKE_INSTALL_PREFIX=release ..'
 
-  - bash: 'make -j8 VERBOSE=1'
-    workingDirectory:  'cmake_build'
-    failOnStderr: true
-    
-  - bash: 'make install'
-    workingDirectory:  'cmake_build'
-    failOnStderr: true
+stages:
+- stage: Build
+  jobs:
+  - job: job_build_gtest
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - task: CMake@1
+      inputs:
+        workingDirectory: 'cmake_build'
+        cmakeArgs: '-DCMAKE_BUILD_TYPE=Release -DBUILD_GMOCK=OFF -DCMAKE_INSTALL_PREFIX=release ..'
 
-  - publish: $(System.DefaultWorkingDirectory)/cmake_build/release
-    artifact: google_test
+    - bash: 'make -j8 VERBOSE=1'
+      workingDirectory:  'cmake_build'
+      failOnStderr: true
+      
+    - bash: 'make install'
+      workingDirectory:  'cmake_build'
+      failOnStderr: true
 
-- job: job_download_artifact
-  dependsOn: 'job_build_gtest'
+    - publish: $(Build.SourcesDirectory)/cmake_build/release
+      artifact: google_test
 
-  pool:
-    vmImage: 'ubuntu-latest'
+- stage: Test
+  jobs:
+  - job: job_download_artifact
+    dependsOn: 'job_build_gtest'
 
-  steps:
-  - bash: 'mkdir -p $(System.DefaultWorkingDirectory)/artifact'
-  - download: $(System.DefaultWorkingDirectory)/artifact
-    artifact: google_test
+    pool:
+      vmImage: 'ubuntu-latest'
+
+    steps:
+    - download: current
+      artifact: google_test

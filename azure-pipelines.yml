@@ -37,8 +37,6 @@ stages:
 - stage: Test
   jobs:
   - job: job_download_artifact
-    dependsOn: 'job_build_gtest'
-
     pool:
       vmImage: 'ubuntu-latest'
 

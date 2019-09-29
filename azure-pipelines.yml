@@ -58,3 +58,13 @@ stages:
     steps:
     - download: current
       artifact: google_test
+      displayName: 'download google_test from Azure  pipeline artifacts'
+    - task: UniversalPackages@0
+      inputs:
+        command: 'download'
+        downloadDirectory: '$(System.DefaultWorkingDirectory)'
+        feedsToUse: 'internal'
+        vstsFeed: 'd97993aa-c244-425a-9062-763432b37e21'
+        vstsFeedPackage: '742ea6a7-edef-46d5-a1d0-663a3fa81146'
+        vstsPackageVersion: '0.0.1'
+        verbosity: 'Information'

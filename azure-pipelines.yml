@@ -15,6 +15,7 @@ stages:
 - stage: Build
   jobs:
   - job: job_build_gtest
+    displayName: 'build google test and publish artifacts'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -33,10 +34,24 @@ stages:
 
     - publish: $(Build.SourcesDirectory)/cmake_build/release
       artifact: google_test
+      displayName: 'publish google test Azure pipeline artifacts'
+
+    - task: UniversalPackages@0
+      inputs:
+        command: 'publish'
+        publishDirectory: '$(Build.SourcesDirectory)/cmake_build/release'
+        vstsFeedPackagePublish: 'google_test'
+        feedsToUsePublish: 'internal'
+        vstsFeedPublish: 'd97993aa-c244-425a-9062-763432b37e21'
+        versionOption: 'patch'
+        packagePublishDescription: 'google test library'
+        verbosity: 'Information'
+
 
 - stage: Test
   jobs:
   - job: job_download_artifact
+    displayName: 'download artifacts'
     pool:
       vmImage: 'ubuntu-latest'
 

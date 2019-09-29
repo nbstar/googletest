@@ -15,7 +15,7 @@ stages:
 - stage: Build
   jobs:
   - job: job_build_gtest
-    displayName: 'build google test and publish artifacts'
+    displayName: 'build googletest and publish artifacts'
     pool:
       vmImage: 'ubuntu-latest'
     steps:
@@ -34,9 +34,10 @@ stages:
 
     - publish: $(Build.SourcesDirectory)/cmake_build/release
       artifact: google_test
-      displayName: 'publish google test Azure pipeline artifacts'
+      displayName: 'publish googletest to Azure pipeline artifacts'
 
     - task: UniversalPackages@0
+      displayName: 'publish googletest to Azure universal artifacts'
       inputs:
         command: 'publish'
         publishDirectory: '$(Build.SourcesDirectory)/cmake_build/release'
@@ -51,15 +52,16 @@ stages:
 - stage: Test
   jobs:
   - job: job_download_artifact
-    displayName: 'download artifacts'
+    displayName: 'download googletest artifacts'
     pool:
       vmImage: 'ubuntu-latest'
 
     steps:
     - download: current
       artifact: google_test
-      displayName: 'download google_test from Azure  pipeline artifacts'
+      displayName: 'download googletest from Azure pipeline artifacts'
     - task: UniversalPackages@0
+      displayName: 'download googletest from Azure universal artifacts'
       inputs:
         command: 'download'
         downloadDirectory: '$(System.DefaultWorkingDirectory)'

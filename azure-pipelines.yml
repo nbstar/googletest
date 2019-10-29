@@ -47,6 +47,9 @@ stages:
         versionOption: 'patch'
         packagePublishDescription: 'google test library'
         verbosity: 'Information'
+    - task: CmdLine@2
+      inputs:
+        script: 'publish package done'
 
 
 - stage: Test

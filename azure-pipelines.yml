@@ -9,7 +9,7 @@ variables:
   var1: value1
 
 trigger:
-- master
+- master   
 
 stages:
 - stage: Build
